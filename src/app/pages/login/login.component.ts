@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { DefaultLoginLayoutComponent } from 'src/app/components/default-login-layout/default-login-layout.component';
 import { PrimaryInputComponent } from 'src/app/components/primary-input/primary-input.component';
 import { LoginService } from 'src/app/services/login.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +28,8 @@ export class LoginComponent {
 
   constructor(
     private router: Router,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private toastService: ToastrService
   ) {
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -39,15 +41,17 @@ export class LoginComponent {
   }
 
   submit() {
-    this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
-      next: () => {
-        // this.router.navigate(['/']);
-        console.log('Login successful');
-      },
-      error: () => {
-        alert('Invalid email or password');
-      }
-    });
+    this.loginService
+      .login(this.loginForm.value.email, this.loginForm.value.password)
+      .subscribe({
+        next: () => {
+          // this.router.navigate(['/']);
+          this.toastService.success('Login successful');
+        },
+        error: () => {
+          this.toastService.error('Something went wrong! try again later');
+        },
+      });
   }
 
   navigate() {
